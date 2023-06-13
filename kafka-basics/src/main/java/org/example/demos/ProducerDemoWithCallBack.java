@@ -25,28 +25,31 @@ public class ProducerDemoWithCallBack {
         //create the Producer
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
+        for (int i = 0; i < 10; i++) {
+            //create a Producer Record
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java", "hello world" + i);
 
-        //create a Producer Record
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java", "hello world");
-
-        // send data
-        producer.send(producerRecord, new Callback() {
-            @Override
-            public void onCompletion(RecordMetadata metadata, Exception e) {
-                //executed every time a record is successfully sent or an exception is thrown
-                if (e == null) {
-                    //the record was successfully sent
-                    log.info("Received the metadeta \n" +
-                            "Topic: " + metadata.topic() + "\n" +
-                            "Partition: " + metadata.partition() + "\n" +
-                            "Offset: " + metadata.offset() + "\n" +
-                            "Timestamp: " + metadata.timestamp()
-                            );
-                } else {
-                    log.error("Error while producing", e);
+            // send data
+            producer.send(producerRecord, new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception e) {
+                    //executed every time a record is successfully sent or an exception is thrown
+                    if (e == null) {
+                        //the record was successfully sent
+                        log.info("Received the metadeta \n" +
+                                "Topic: " + metadata.topic() + "\n" +
+                                "Partition: " + metadata.partition() + "\n" +
+                                "Offset: " + metadata.offset() + "\n" +
+                                "Timestamp: " + metadata.timestamp()
+                        );
+                    } else {
+                        log.error("Error while producing", e);
+                    }
                 }
-            }
-        });
+            });
+        }
+
+
 
         //flush and close the producer
             //tell the producer to send all data and block until done -- synchronous
