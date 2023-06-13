@@ -1,16 +1,18 @@
 package org.example.demos;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ProducerDemo {
+public class ProducerDemoWithCallBack {
 
-    private static final Logger log = LoggerFactory.getLogger(ProducerDemo.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ProducerDemoWithCallBack.class.getSimpleName());
     public static void main(String[] args) {
         log.info("I am a Kafka Producer");
 
@@ -28,7 +30,23 @@ public class ProducerDemo {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java", "hello world");
 
         // send data
-        producer.send(producerRecord);
+        producer.send(producerRecord, new Callback() {
+            @Override
+            public void onCompletion(RecordMetadata metadata, Exception e) {
+                //executed every time a record is successfully sent or an exception is thrown
+                if (e == null) {
+                    //the record was successfully sent
+                    log.info("Received the metadeta \n" +
+                            "Topic: " + metadata.topic() + "\n" +
+                            "Partition: " + metadata.partition() + "\n" +
+                            "Offset: " + metadata.offset() + "\n" +
+                            "Timestamp: " + metadata.timestamp()
+                            );
+                } else {
+                    log.error("Error while producing", e);
+                }
+            }
+        });
 
         //flush and close the producer
             //tell the producer to send all data and block until done -- synchronous
