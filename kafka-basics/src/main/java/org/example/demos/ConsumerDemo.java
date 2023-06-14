@@ -28,11 +28,11 @@ public class ConsumerDemo {
         //properties.setProperty("key.serializer", StringSerializer.class.getName());
         //properties.setProperty("value.serializer", StringSerializer.class.getName());
 
-       //create consuner configs
+       //create consumer configs
         properties.setProperty("key.deserializer", StringDeserializer.class.getName());
         properties.setProperty("value.deserializer", StringDeserializer.class.getName());
 
-        properties.setProperty("group.id", groupId);
+        properties.setProperty("group.id", groupId); //ensures that consumers start at right offset
 
         properties.setProperty("auto.offset.reset", "earliest"); //cant be none/earliest/latest  , latest is current topics
 
